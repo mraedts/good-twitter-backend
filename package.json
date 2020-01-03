@@ -1,0 +1,27 @@
+{
+  "name": "goodtwitter-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "homepage": "http://192.168.3.11:3000",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-favicon": "^2.0.1",
+    "install": "^0.13.0",
+    "morgan": "^1.9.1",
+    "pretty": "^2.0.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
+    "socket.io": "^2.3.0",
+    "twit": "^2.2.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
