@@ -9,24 +9,19 @@ const twit = new Twit({
   access_token_secret: process.env.TOKEN_SECRET
 });
 
-let friendArray = [];
+function newTwit(token, tokenSecret) {
+  return new Twit({
+    consumer_key: process.env.API_KEY,
+    consumer_secret: process.env.API_SECRET,
+    access_token: token,
+    access_token_secret: tokenSecret
+  });
+}
 
-// const user = getCurrentUser();
-
-// function getCurrentUser() {
-//   twit.get('account/verify_credentials', (err, data) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       return data;
-//     }
-//   });
-
-// }
-
-async function getStreamObj(socket) {
-  const friends = await getFriendList();
-  const stream = twit.stream('statuses/filter', {
+async function getStreamObj(socket, tokens, screenName) {
+  const friends = await getFriendList(screenName);
+  console.log(screenName);
+  const stream = newTwit(tokens[0], tokens[1]).stream('statuses/filter', {
     follow: friends,
     tweet_mode: 'extended'
   });
@@ -47,7 +42,9 @@ async function getStreamObj(socket) {
   return stream;
 }
 
-async function tweetInteraction(ID, interactType, undo) {
+async function tweetInteraction(ID, interactType, tokens, undo) {
+  const twit = newTwit(tokens[0], tokens[1]);
+
   async function favoriteTweet(id) {
     const response = await twit
       .post('favorites/create', { id: id })
@@ -126,12 +123,9 @@ async function tweetInteraction(ID, interactType, undo) {
   return response;
 }
 
-function getFriendList() {
+function getFriendList(screenName) {
   return new Promise(function(resolve, reject) {
-    if (friendArray.length > 0) {
-      resolve(friendArray);
-    }
-    twit.get('friends/ids', { screen_name: 'e_dts_' }, (err, data) => {
+    twit.get('friends/ids', { screen_name: screenName }, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -154,8 +148,8 @@ function getIDs(tweets) {
   return ids;
 }
 
-async function getInitialTweets() {
-  const response = await twit
+async function getInitialTweets(token, tokenSecret) {
+  const response = await newTwit(token, tokenSecret)
     .get('statuses/home_timeline', { count: 50, tweet_mode: 'extended' })
     .catch(err => {
       console.error(err);
@@ -169,8 +163,10 @@ async function getInitialTweets() {
   return response;
 }
 
-async function getHydrated(ids) {
+async function getHydrated(ids, tokens) {
   try {
+    const twit = newTwit(tokens[0], tokens[1]);
+
     function createObjects(results) {
       let updatedTweetObjs = [];
       results.forEach(result => {
